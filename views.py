@@ -1,9 +1,6 @@
 from datetime import datetime
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 14c7095bf60bf321b67ef64c8c9245b8d90bbeba
 class MainView:
     def main_menu(self):
         """Menu principal du programme"""
@@ -25,16 +22,10 @@ class MainView:
         return choice
 
     def confirm_yes_no(self):
-<<<<<<< HEAD
         """confirmation par Y/N ou y/n"""
         confirm = input("---> ")
         return confirm
 
-=======
-        """ confirmation par Y/N ou y/n"""
-        confirm = input("---> ")
-        return confirm
->>>>>>> 14c7095bf60bf321b67ef64c8c9245b8d90bbeba
 
 class TournamentView:
     def get_tournament_data(self):
@@ -52,10 +43,7 @@ class TournamentView:
         choice = input("Votre choix ---> ")
         return choice
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 14c7095bf60bf321b67ef64c8c9245b8d90bbeba
 class PlayerView:
     def player_menu(self):
         """Menu Joueurs"""
@@ -72,10 +60,7 @@ class PlayerView:
         print("")
         choice = option
         return choice
-<<<<<<< HEAD
 
-=======
->>>>>>> 14c7095bf60bf321b67ef64c8c9245b8d90bbeba
     def get_player_data(self):
         """Saisie des données d'un nouveau joueur"""
         ident = input("Identifiant national du joueur:  ")
@@ -99,7 +84,6 @@ class PlayerView:
         return ident
 
     def print_player_list(self):
-<<<<<<< HEAD
         """Liste les joueurs"""
         print("")
         print("Liste des joueurs :")
@@ -150,61 +134,6 @@ class AdminView:
         print('   4.  Vider la table "tournaments"')
         print('   5.  Vider la table "players"')
         print("   6.  Retour")
-=======
-        """Liste les joueurs """
-        print("")
-        print("Liste des joueurs inscrits :")
-        print("     Id      Nom,Prénom")
-
-    def add_players_to_tournament(self):
-        """ ajout de joueur au tournoi"""
-        print("")
-        num_player_list = input("Ajouter un joueur au Tournoi :  ")
-        return num_player_list
-
-    def get_score_player(self):
-        """saisie du score joueur"""
-        print("")
-        score_in = input("Saisir le score du joueur: ")
-        return score_in
-
-class ReportsView:
-    def reports_infos_menu(self):
-        """Menu Rapport"""
-        print("Menu Rapports")
-        print("Sélectionnez une option: ")
-        print("")
-        print("   1.  Liste des joueurs par ordre alphabétique")
-        print("   2.  Liste des tournois ")
-        print("   3.  Données d'un tournoi ")
-        print("   4.  Liste des joueurs du dernier tournoi par ordre alphabétique")
-        print("   5.  Liste des tours et matchs des tours du dernier tournoi")
-        print("   6.  Retour")
-
-        print("")
-        option = input("Votre choix ---> ")
-        print("")
-        choice = option
-        return choice
-
-    def administation_menu(self):
-        """Menu Administration"""
-        print("Menu Administration")
-        print("Sélectionnez une option: ")
-        print("")
-        print("   1.  Lister la table \"tournaments\"")
-        print("   2.  Lister la table \"players\"")
-        print("   3.  Lister la table \"competitors\"")
-        print("   4.  Vider la table \"tournaments\"")
-        print("   5.  Vider la table \"players\"")
-        print("   6.  Retour")
-
-        print("")
-        option = input("Votre choix ---> ")
-        print("")
-        choice = option
-        return choice
->>>>>>> 14c7095bf60bf321b67ef64c8c9245b8d90bbeba
 
         print("")
         option = input("Votre choix ---> ")
