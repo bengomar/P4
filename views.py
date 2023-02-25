@@ -92,13 +92,13 @@ class PlayerView:
     def add_players_to_tournament(self):
         """ajout de joueur au tournoi"""
         print("")
-        num_player_list = input("Ajouter un joueur au Tournoi :  ")
+        num_player_list = input("Sélectionner une option  :  ")
         return num_player_list
 
-    def get_score_player(self):
+    def get_score_player(self, family_name, name):
         """saisie du score joueur"""
         print("")
-        score_in = input("Saisir le score du joueur: ")
+        score_in = input(f"Saisir le score du joueur {name} {family_name}: ")
         return score_in
 
 

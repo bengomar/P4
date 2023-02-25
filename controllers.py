@@ -21,6 +21,7 @@ class MainControllers:
     sorted_players = ""
     list_competitor = []
     player_playing = {}
+    players_pair = []
 
     def main_menu_choice(self):
         """Menu principal"""
@@ -69,7 +70,7 @@ class MainControllers:
             Waiting.wait()
         elif choice == "4":
             # Retour
-            self.main_menu_choice()
+            MainControllers().main_menu_choice()
         else:
             print("Saisie invalide, veuillez réessayer")
             Waiting.wait()
@@ -247,7 +248,8 @@ class MainControllers:
         for player in self.list_player_tab:
             npa += 1
             print(f"  {npa}. {player[0]} {player[1]} {player[2]}")
-        print(f"  {npa + 1}. Fin de selection")
+        print(f"  {npa + 1}. Ajouter tous les joueurs")
+        print(f"  {npa + 2}. Fin de selection")
 
     def add_players_tournament(self):
         """Ajout de joueurs disponibles dans le tournoi en cours"""
@@ -258,15 +260,24 @@ class MainControllers:
         )
         DatabasesTinydb().competitors.truncate()
         nb_player = len(self.list_player_tab)
-
+        print(f"{nb_player=}")
         while nb_player > 0:
             self.print_players_by_num()
             num_player_list = PlayerView().add_players_to_tournament()
 
-            if int(nb_player) + 1 == int(num_player_list):
+            if int(nb_player) + 2 == int(num_player_list):
+                break
+            elif int(nb_player) + 1 == int(num_player_list):
+                self.list_competitor = self.list_player_tab
                 for play in self.list_competitor:
-                    print(f"  {play[0]} {play[1]} {play[2]}")
-                print("")
+                #    print(f"  {play[0]} {play[1]} {play[2]}")
+                #print("")
+                    DatabasesTinydb().add_competitors(
+                        play[0],
+                        play[1],
+                        play[2],
+                    )
+                #DatabasesTinydb().check_table_competitors()
                 break
 
             else:
@@ -324,7 +335,7 @@ class MainControllers:
     def random_players_pairs(self):
         """Génération de pairs de joueurs (match) depuis la liste des joueurs selectionnés pour le tournoi"""
         list_p_o = []
-        players_pair = []
+
         DatabasesTinydb.pairs.truncate()
 
         for player in DatabasesTinydb.competitors:
@@ -358,7 +369,7 @@ class MainControllers:
             print(
                 f"  {current_match.match[0][0][0]} {current_match.match[0][0][1]} {current_match.match[0][0][2]} --vs-- {current_match.match[1][0][0]} {current_match.match[1][0][1]} {current_match.match[1][0][2]}"
             )
-            players_pair.append(
+            MainControllers.players_pair.append(
                 [current_match.match[0][0][0], current_match.match[1][0][0]]
             )
             list_p_o.remove(player)
@@ -366,7 +377,7 @@ class MainControllers:
 
             nb_match -= 1
         match = 0
-        for pair in players_pair:
+        for pair in self.players_pair:
             match += 1
             DatabasesTinydb.pairs.insert({match: pair})
 
@@ -376,22 +387,29 @@ class MainControllers:
         for pair in pairs_list:
             player = pair[0]
             opponent = pair[1]
-            print(f"{player=}, {opponent=}")
-            print(f"{dico_of_matchs=}")
-            print("")
+            #print(f"{player=}, {opponent=}")
+            #print(f"{dico_of_matchs=}")
+            #print("")
             (dico_of_matchs.get(player)).remove(opponent)
             (dico_of_matchs.get(opponent)).remove(player)
-            print(f"{dico_of_matchs=}")
+            #print(f"{dico_of_matchs=}")
 
+            return dico_of_matchs
     def get_round_number(self):
         rounds = DatabasesTinydb().check_table_current_tournament()
         nb_rounds = rounds.get("nb_round") - 1
         return nb_rounds
 
+
     def generate_next_pair(self, players: list) -> list:
-        pairs_next_rounds = []
+        """Génération des paires pour les rounds après le 1er """
+        matchs_of_current_round = []
         pairs_next_rounds = players
-        print(f"{pairs_next_rounds=}")
+        #print(f"{pairs_next_rounds=}")
+        matchs_of_first_round = self.players_pair
+        #print(f"{matchs_of_first_round=}")
+        #print("")
+        #print(f"{pairs_next_rounds=}")
         nb_match = len(players) // 2
         while nb_match > 0:
             player = pairs_next_rounds[0]
@@ -399,9 +417,25 @@ class MainControllers:
 
             # Si le match actuel a déja été jouer, selectionner l'opponent suivant
 
-            print(
-                f"  {player[0]} {player[1]} {player[2]} --vs-- {opponent[0]} {opponent[1]} {opponent[2]}"
-            )
+            dico_player = self.create_dico_player_playing()
+            #print(f"dico de match {dico_player=}")
+
+            for ident, idents in dico_player.items():
+                matchs_of_current_round.append([ident, idents[0]])
+            #print(f"{matchs_of_current_round=}")
+            #print("")
+            #print(f"{matchs_of_first_round[0]=}")
+            pos_0 = (matchs_of_first_round[0]).index(matchs_of_first_round[0][0])
+            pos_1 = (matchs_of_first_round[0]).index(matchs_of_first_round[0][1])
+            matchs_of_first_round_inverse = [(matchs_of_first_round[0])[pos_1],(matchs_of_first_round[0])[pos_0]]
+            #print(f"{matchs_of_first_round_inverse=}")
+            #print(f"{matchs_of_current_round=}")
+            if matchs_of_first_round[0] and matchs_of_first_round_inverse in matchs_of_current_round:
+                print("existe ! , selectionner l'opponent suivant")
+            else:
+                print(
+                    f"  {player[0]} {player[1]} {player[2]} --vs-- {opponent[0]} {opponent[1]} {opponent[2]}"
+                )
             # DatabasesTinydb.pairs.insert({match: pair})
             # Mettre a jour la liste des paires existantes
 
@@ -409,92 +443,28 @@ class MainControllers:
             pairs_next_rounds.remove(opponent)
 
             nb_match -= 1
-            """
-            match = 0
-            for pair in players:
-                match += 1
-                print(match, ":", pair[0])
-                #DatabasesTinydb.pairs.insert({match: pair})
-            #print("")
-            #print("Liste des paires du 1er tour --> ", DatabasesTinydb().get_current_pairs_list())
-            """
         return []
 
     def next_rounds(self):
         # pairs_next_rounds = []
-        self.sorted_players = DatabasesTinydb().sorted_player_by_score()
+
         # nb_round_remain = self.get_round_number()
         # print(f"{nb_round_remain = }")
 
-        for ronde in range(2, 3):
+        for ronde in range(2, 5):
             print("                **********************")
             print(f"                * Match du {ronde}eme tour: *")
             print("                **********************")
+
             # récupérer la liste des joueurs triés par score.
-
             # générer des nouvelles paires (choisir les 2 joueurs qui se suivent)
-
+            self.sorted_players = DatabasesTinydb().sorted_player_by_score()
             self.generate_next_pair(self.sorted_players)
+
             # récupérer la liste des pairs existante
 
-            # Générer les matchs par aux pairs.
-            # saisir les scores des matchs
-
-    def old_next_rounds(self):
-        sorted_players = DatabasesTinydb().sorted_player_by_score()
-        actual_players_pairs = DatabasesTinydb().get_current_pairs_list()
-        pairs_next_rounds = []
-
-        for rounds in DatabasesTinydb.current_tournament:
-            round_set = rounds.get("nb_round")
-            nb_rounds = rounds.get("nb_round") - 1
-            print("round_set--------------->", round_set)
-            print("nb_rounds--------------->", nb_rounds)
-
-        actual_round = 1
-        while actual_round != round_set:
-            print(actual_round)
-            actual_round += 1
-
-        n = nb_rounds
-
-        # n = (len(self.pairs)) + 1 - (len(self.pairs))
-
-        while nb_rounds > 0:
-
-            if nb_rounds == 3:
-
-                """Génération de pairs de joueurs (match) depuis la liste des joueurs selectionnés pour le tournoi"""
-
-                print("                **********************")
-                print(f"                * Match du {n}eme tour: *")
-                print("                **********************")
-
-                # print(f"{nb_rounds=}")
-                print(len(DatabasesTinydb.competitors) // 2, "matchs ")
-                print("")
-                print(f"{sorted_players=}")
-
-                player = sorted_players[0][0]
-                opponent = sorted_players[1][0]
-                current_match = Match(player, opponent)
-
-                pairs_next_rounds.append(
-                    [current_match.match[0][0], current_match.match[1][0]]
-                )
-                for pair in actual_players_pairs:
-                    if pairs_next_rounds == pair:
-                        print(pair, "match deja joué")
-                    else:
-                        print(pair, "match a jouer")
-
-            else:
-                print("                **********************")
-                print(f"                * Match du {n}eme tour: *")
-                print("                **********************")
-
-            nb_rounds -= 1
-            n += 1
+            # Générer les matchs par pairs.
+            # Saisir les scores des matchs
 
     def match_score_player(self):
         list_player_tab = self.list_competitor
@@ -506,7 +476,7 @@ class MainControllers:
             else:
                 print("")
                 print(
-                    "Saisir les scores des matchs aux joueurs (Gagné = 1, Perdu = 0, Nul = 0.5)"
+                    "Saisir les scores des matchs des joueurs (Gagné = 1, Perdu = 0, Nul = 0.5)"
                 )
                 npa = 0
                 for play in list_player_tab:
@@ -519,7 +489,10 @@ class MainControllers:
 
                 if choice:
                     ident = list_player_tab[int(choice) - 1][0]
-                score_in = PlayerView().get_score_player()
+                    family_name = list_player_tab[int(choice) - 1][1]
+                    name = list_player_tab[int(choice) - 1][2]
+
+                score_in = PlayerView().get_score_player(family_name, name)
                 self.list_competitor.remove(player_scored)
 
                 DatabasesTinydb.competitors.update(
@@ -542,10 +515,8 @@ class MainControllers:
         # rentrer les résultats du 1er tour
         # les scores seront enregistrés dans l'instance de tournoi dans un dico {ident:score}
         self.match_score_player()
-        print(self.create_dico_player_playing())
-
         # créer le 2ème tour
-        # self.next_rounds()
+        self.next_rounds()
         # créer les matchs en fonction des points des joueurs.
         # 1- Génération des paires --> une liste de listes
         # 2- créer des instances de matchs
@@ -553,9 +524,9 @@ class MainControllers:
 
 
 # start programme
-# MainControllers().main_menu_choice()
-# MainControllers().random_players_pairs()
-MainControllers().update_dico_player_playing()
+#MainControllers().main_menu_choice()
+#MainControllers().random_players_pairs()
+#MainControllers().update_dico_player_playing()
 # MainControllers().print_players_by_num()
 
 # MainControllers().get_round_number()
@@ -573,10 +544,10 @@ MainControllers().update_dico_player_playing()
 # DatabasesTinydb().check_table_players()
 
 # MainControllers().add_players_tournament()
-# MainControllers().create_dico_player_playing()
-# MainControllers().next_rounds()
+#MainControllers().create_dico_player_playing()
 
-# MainControllers().add_players_tournament()
-# DatabasesTinydb().sorted_player_by_score()
-
-# MainControllers().next_rounds()
+#MainControllers().add_players_tournament()
+#DatabasesTinydb().sorted_player_by_score()
+MainControllers().random_players_pairs()
+MainControllers().next_rounds()
+MainControllers().match_score_player()
