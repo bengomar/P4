@@ -82,7 +82,7 @@ class DatabasesTinydb:
             # print(f"{point[0]} {point[1]} {point[2]} {point[3]}")
             score_sorted_players.append([point[0], point[1], point[2], point[3]])
 
-        # print(f"{score_sorted_players}")
+        print(f"{score_sorted_players}")
         return score_sorted_players
 
     def tournaments_list(self):
@@ -172,7 +172,7 @@ class DatabasesTinydb:
         )
 
     def add_competitors(
-        self, ident: str, surname: str, firstname: str, score: int = ""
+        self, ident: str, surname: str, firstname: str, score: int = 0
     ):
         """Ajout d'un joueur à la table competitors"""
         self.ident = ident
