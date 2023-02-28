@@ -23,6 +23,8 @@ class Player:
         self.firstname = firstname
         self.date_of_birth = date_of_birth
 
+    def __str__(self):
+        return f"{self.surname} - {self.firstname} - {self.ident} - {self.date_of_birth}"
 
 class Match:
     def __init__(self, player: str, opponent: str):
