@@ -1,7 +1,6 @@
 import pprint
 import random
-
-from samba.common import raw_input
+import sys
 
 from modeles import Match, Player, Round, Tournament
 from persistance import DatabasesTinydb
@@ -12,7 +11,7 @@ class Waiting:
     def wait():
         """Permet d'obtenir une pause du programme"""
         print("")
-        pause = raw_input("Appuyer sur ENTREE pour continuer ...")
+        pause = input("Appuyer sur ENTREE pour continuer ...")
         pause
         print("")
 
@@ -71,7 +70,7 @@ class MainControllers:
             Waiting.wait()
         elif choice == "4":
             # Retour
-            MainControllers().main_menu_choice()
+            self.main_menu_choice()
         else:
             print("Saisie invalide, veuillez réessayer")
             Waiting.wait()
@@ -384,7 +383,6 @@ class MainControllers:
     def remove_pairs_players_playing_dico(self):
         #pairs_list = DatabasesTinydb().get_current_pairs_list()
 
-        print("Original -------------------------> ")
         for pair in self.players_pair:
 
             player = pair[0]
@@ -399,7 +397,6 @@ class MainControllers:
 
             #print(f"{self.players_pair=}")
             #pprint.pprint(self.player_playing)
-        print("--------------------------------------------->")
         pprint.pprint(self.player_playing)
         return self.player_playing
     def get_round_number(self):
@@ -473,10 +470,10 @@ class MainControllers:
         nb_round_remain = self.get_round_number()
         print(f"{nb_round_remain = }")
 
-        for ronde in range(2, 5):
-            print("                **********************")
-            print(f"                * Match du {ronde}eme tour: *")
-            print("                **********************")
+        for ronde in range(2, 4):
+            print("**********************")
+            print(f"* Match du {ronde}eme tour: *")
+            print("**********************")
 
             # récupérer la liste des joueurs triés par score.
             # générer des nouvelles paires (choisir les 2 joueurs qui se suivent)
